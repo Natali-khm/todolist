@@ -18,7 +18,7 @@ function App() {
     { id: v1(), title: "JS/TS", isDone: false },
   ];
 
-  useEffect(()=>console.log(tasks), [tasks_1]);
+  // useEffect(()=>console.log(tasks), [tasks_1]);
 
 
   const [tasks, setTasks] = useState <Array<TaskType>>(tasks_1);
@@ -36,13 +36,23 @@ function App() {
   const changleFilter = (filterValue: FilterValuesType) => { setFilter(filterValue) };
   
   const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
-    
+  
+
     switch (filter) {
-      case 'active': return tasks.filter(task => task.isDone === false);
-      case 'completed': return tasks.filter(task => task.isDone === true);
+      case 'active': return tasks.filter(task => !task.isDone);
+      case 'completed': return tasks.filter(task => task.isDone);
       default: return tasks;
     }    
-  }
+  };
+
+    const changeTaskStatus = (taskId: string, isDone: boolean) => { 
+      setTasks(
+        tasks.map(
+              (t: TaskType) => t.id === taskId 
+              ? {...t, isDone: isDone} 
+              : t 
+                 ))};
+
 
   const filteredTasksForRender = getFilteredTasksForRender(tasks, filter);
   return (
@@ -52,6 +62,8 @@ function App() {
                 tasks = {filteredTasksForRender} 
                 removeTask = {removeTask}
                 addTask = {addTask}
+                changeTaskStatus = {changeTaskStatus}
+                filter = {filter}
                 />
     </div>
   );
