@@ -10,61 +10,100 @@ export type TaskType = {
   isDone: boolean;
 }
 
+export type TodolistsType = {
+  id: string
+  title: string
+  filter: FilterValuesType
+}
+
+
+
 function App() {
-  const todoListTitle_1: string = "What to learn";
-  const tasks_1: Array <TaskType> = [
-    { id: v1(), title: "HTML", isDone: true },
-    { id: v1(), title: "CSS", isDone: true },
-    { id: v1(), title: "JS/TS", isDone: false },
-  ];
+
+let todolistID1=v1();
+let todolistID2=v1();
+
+let [todolists, setTodolists] = useState<Array<TodolistsType>>([
+    {id: todolistID1, title: 'What to learn', filter: 'all'},
+    {id: todolistID2, title: 'What to buy', filter: 'all'},
+])
+
+let [tasks, setTasks] = useState({
+
+    [todolistID1]:[
+    {id: v1(), title: "HTML&CSS", isDone: true},
+    {id: v1(), title: "JS", isDone: true},
+    {id: v1(), title: "ReactJS", isDone: false},
+    {id: v1(), title: "Rest API", isDone: false},
+    {id: v1(), title: "GraphQL", isDone: false},
+],
+    [todolistID2]:[
+        {id: v1(), title: "HTML&CSS2", isDone: true},
+        {id: v1(), title: "JS2", isDone: true},
+        {id: v1(), title: "ReactJS2", isDone: false},
+        {id: v1(), title: "Rest API2", isDone: false},
+        {id: v1(), title: "GraphQL2", isDone: false},
+    ]
+})
+
 
   // useEffect(()=>console.log(tasks), [tasks_1]);
 
-
-  const [tasks, setTasks] = useState <Array<TaskType>>(tasks_1);
-  const [filter, setFilter] = useState <FilterValuesType>('all');
   
-  const removeTask = (taskId: string) => { 
-    setTasks(tasks.filter(task => task.id !== taskId));
-   };
+  const removeTask = (todoListId: string, taskId: string) => { 
+    setTasks({   ...tasks, [todoListId]: tasks[todoListId].filter(t=> t.id!== taskId)   });
+  };
 
-  const addTask = (title: string) => {
+  const addTask = (todolistId: string, title: string) => {
     const newTask: TaskType = {id: v1(), title, isDone: false};
-    setTasks([newTask, ...tasks])
+    setTasks({...tasks, [todolistId]: [...tasks[todolistId], newTask]})
   };
 
-  const changleFilter = (filterValue: FilterValuesType) => { setFilter(filterValue) };
-  
-  const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
+  const changleFilter = (todoListId: string, filterValue: FilterValuesType) => { setTodolists (todolists.map(el=>el.id === todoListId ? {...el, filter: filterValue} : el) ) }; 
   
 
-    switch (filter) {
-      case 'active': return tasks.filter(task => !task.isDone);
-      case 'completed': return tasks.filter(task => task.isDone);
-      default: return tasks;
-    }    
-  };
-
-    const changeTaskStatus = (taskId: string, isDone: boolean) => { 
+  const changeTaskStatus = (todoListId: string, taskId: string, isDone: boolean) => { 
       setTasks(
-        tasks.map(
-              (t: TaskType) => t.id === taskId 
-              ? {...t, isDone: isDone} 
-              : t 
-                 ))};
+        {...tasks, [todoListId]: tasks[todoListId].map(el=>el.id===taskId ?  {...el, isDone}: el)}  
+        )
+  };
 
+  const removeTodolist = (todoListId: string) => {
+      setTodolists(todolists.filter(el=>el.id !==todoListId));
+      delete tasks[todoListId]
+  }
 
-  const filteredTasksForRender = getFilteredTasksForRender(tasks, filter);
   return (
     <div className="App">
-      <TodoList title = {todoListTitle_1} 
-                changleFilter = {changleFilter} 
-                tasks = {filteredTasksForRender} 
-                removeTask = {removeTask}
-                addTask = {addTask}
-                changeTaskStatus = {changeTaskStatus}
-                filter = {filter}
-                />
+
+      {todolists.map(el=>{
+
+          const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
+  
+            switch (filter) {
+              case 'active': return tasks.filter(task => !task.isDone);
+              case 'completed': return tasks.filter(task => task.isDone);
+              default: return tasks;
+            }    
+          };
+
+        const filteredTasksForRender = getFilteredTasksForRender(tasks[el.id], el.filter);
+
+
+        return (
+            <TodoList title = {el.title} 
+                      changleFilter = {changleFilter} 
+                      tasks = {filteredTasksForRender} 
+                      removeTask = {removeTask}
+                      addTask = {addTask}
+                      changeTaskStatus = {changeTaskStatus}
+                      filter = {el.filter}
+                      id={el.id}
+                      key={el.id}
+                      removeTodolist={removeTodolist}
+                      />
+        )
+      })}
     </div>
   );
 }
