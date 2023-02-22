@@ -1,6 +1,6 @@
 .App {
-  padding: 30px;
-  display: flex;
+  /* padding: 30px;
+  display: flex; */
 }
 
 .App > div {
@@ -8,11 +8,10 @@
 }
 
 .task-done {
-  text-decoration: line-through;
+  opacity: 30%;
 }
 
 .task{
-  font-weight: bold;
 }
 
 .btn-active{
@@ -23,4 +22,16 @@
 .input-error{
   border: 2px solid red;
   outline:none
+}
+
+
+.task-default{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.taskBlock{
+  /* margin: 0; */
+  padding: 20px;
 }

@@ -1,4 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react"
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 type AddItemFormPropsType = {
     addItem: (title: string) => void
@@ -8,7 +10,7 @@ type AddItemFormPropsType = {
 function AddItemForm (props: AddItemFormPropsType) {
 
     const [title, setTitle] = useState<string>('')
-    const [error, setError] = useState<boolean>(false)
+    const [error, setError] = useState<boolean>(false) // заяем здесь | null ???????
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         error && setError(false);
@@ -26,19 +28,30 @@ function AddItemForm (props: AddItemFormPropsType) {
             setTitle('')            
         }
 
-    const inputErrorClass = error ? 'input-error' : ''
-    const errorMessage = error && <p style={{color: 'red'}}>required title</p>
+    // const errorMessage = error && <p style={{color: 'red'}}>The title is required</p>
+    const addItemBtnStyle = {maxidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}
 
     return (
         <div>
-            <input  onChange = {onChangeHandler}
-                    value = {title}
-                    onKeyDown = {onKeyDownHandler}
-                    className={inputErrorClass}
-            />
-            <button onClick={addTask}>+</button>
-            {errorMessage}
+            <div style = {{display: 'flex', alignItems: 'flex-end'}}> 
+                <TextField  id="standard-basic" 
+                            label={error ? "The title is required" : "Create new item" }
+                            variant="standard"
+                            onChange = {onChangeHandler}
+                            value = {title}
+                            onKeyDown = {onKeyDownHandler}
+                            error={error}
+                            size = 'small'
+                            />
+
+                <Button size = 'small'
+                        variant="outlined" 
+                        style={addItemBtnStyle} 
+                        onClick={addTask}>+</Button>
+            </div>
+            {/* {errorMessage} */}
         </div>
+
     )
 }
 

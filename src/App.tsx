@@ -3,6 +3,10 @@ import { v1 } from "uuid";
 import AddItemForm from "./components/AddItemForm";
 import "./App.css";
 import TodoList from "./TodoList";
+import ButtonAppBar from "./components/ButtonAppBar"
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 
 export type FilterValuesType = 'all' | 'active' | 'completed';
 
@@ -51,9 +55,6 @@ let [tasks, setTasks] = useState<TasksStateType>({
 })
 
 
-  // useEffect(()=>console.log(tasks), [tasks_1]);
-
-  
   const removeTask = (todoListId: string, taskId: string) => { 
     setTasks({   ...tasks, [todoListId]: tasks[todoListId].filter(t=> t.id!== taskId)   });
   };
@@ -97,42 +98,54 @@ let [tasks, setTasks] = useState<TasksStateType>({
     )
   }
 
-  return (  
-    <div className="App">
+  return (
 
-      <AddItemForm addItem={addTodoList}/>
+     <div className="App">
 
-      {todolists.map(el=>{
+        <ButtonAppBar/>
 
-          const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
-  
-            switch (filter) {
-              case 'active': return tasks.filter(task => !task.isDone);
-              case 'completed': return tasks.filter(task => task.isDone);
-              default: return tasks;
-            }    
-          };
+        <Container fixed>
+            <Grid container style={{padding: '20px'}}>
+              <div><AddItemForm addItem={addTodoList}/></div>
+            </Grid>
 
-        const filteredTasksForRender = getFilteredTasksForRender(tasks[el.id], el.filter);
+            <Grid container spacing={3}>
+              {todolists.map(el=>{
 
+                  const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
+          
+                    switch (filter) {
+                      case 'active': return tasks.filter(task => !task.isDone);
+                      case 'completed': return tasks.filter(task => task.isDone);
+                      default: return tasks;
+                    }    
+                  };
 
-        return (
-            <TodoList title = {el.title} 
-                      changleFilter = {changleFilter} 
-                      tasks = {filteredTasksForRender} 
-                      removeTask = {removeTask}
-                      addTask = {addTask}
-                      changeTaskStatus = {changeTaskStatus}
-                      filter = {el.filter}
-                      id={el.id}
-                      key={el.id}
-                      removeTodolist={removeTodolist}
-                      changeTaskTitle={changeTaskTitle}
-                      changeTLTitle={changeTLTitle}
-                      />
-        )
-      })}
-    </div>
+                const filteredTasksForRender = getFilteredTasksForRender(tasks[el.id], el.filter);
+
+                return (
+                    <Grid item>
+                      <Paper style={{padding: '20px'}}>
+                        <TodoList title = {el.title} 
+                                  changleFilter = {changleFilter} 
+                                  tasks = {filteredTasksForRender} 
+                                  removeTask = {removeTask}
+                                  addTask = {addTask}
+                                  changeTaskStatus = {changeTaskStatus}
+                                  filter = {el.filter}
+                                  id={el.id}
+                                  key={el.id}
+                                  removeTodolist={removeTodolist}
+                                  changeTaskTitle={changeTaskTitle}
+                                  changeTLTitle={changeTLTitle}
+                                  />                    
+                      </Paper>
+                    </Grid>
+                    )
+              })}       
+            </Grid>
+        </Container>
+      </div>
   );
 }
 

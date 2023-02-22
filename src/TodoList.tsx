@@ -3,6 +3,9 @@ import AddItemForm from './components/AddItemForm';
 import { FilterValuesType, TaskType } from './App';
 import { EditableSpan } from './components/EditableSpan';
 import { Button } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
 
 type todoListPropsType = {
     title: string;
@@ -40,45 +43,47 @@ const TodoList = (props: todoListPropsType) => {
         props.addTask(props.id, title)
     }
 
-    const removeTodolistHandler = () => {props.removeTodolist(props.id)}
-    const onChangeTLTitleHandler = (newTitle: string) => {props.changeTLTitle(props.id, newTitle)}
+    const removeTodolistHandler = () => props.removeTodolist(props.id)
+    const onChangeTLTitleHandler = (newTitle: string) => props.changeTLTitle(props.id, newTitle)
  
 
     let tasksList = !props.tasks.length 
     ? <span>Your to-do list is empty</span>  
     : props.tasks.map((task: TaskType) => {     
             
-        const removeTask = () => {props.removeTask(props.id, task.id)}
-        const onChangeTaskTitleHandler = (newTitle: string) => {props.changeTaskTitle(props.id, task.id, newTitle)}
+        const removeTask = () => props.removeTask(props.id, task.id)
+        const onChangeTaskTitleHandler = (newTitle: string) => props.changeTaskTitle(props.id, task.id, newTitle)
+        const finalTaskStyle = 'task-default' + (task.isDone ? ' ' + 'task-done' : ' ' + 'task');
 
         return (
-            <li key={task.id} className={task.isDone ? 'task-done' : 'task'}>
-                <input type="checkbox" 
-                        checked={task.isDone}
-                        onChange = {(e)=>changeTaskStatus(e, task.id)}
-                        />
+            <li key={task.id} className={finalTaskStyle}>
+                <Checkbox checked={task.isDone}
+                          onChange = {(e)=>changeTaskStatus(e, task.id)}
+                          color="success"
+                          />
                 <EditableSpan title={task.title} onChange={onChangeTaskTitleHandler}/>
-                <Button variant="outlined" onClick={removeTask}>x</Button>
+                <IconButton aria-label="delete" onClick={removeTask} style={{marginLeft: 'auto', color: '#eda4a4'}}>
+                    <DeleteIcon />
+                </IconButton>
             </li>                 
             )
         });   
         
         
-    return (
+    return ( /// style={{display: 'flex', flexDirection: 'column', alignItems: 'stretch'}} 
         <div>
-            <h3>
+            <h3 style={{display: 'flex', justifyContent: 'space-between'}}>
                 <EditableSpan title={props.title} onChange={onChangeTLTitleHandler}/>
-                <button onClick={removeTodolistHandler}>x</button>
+                <IconButton aria-label="delete" onClick={removeTodolistHandler} style={{color: '#f07d7d'}}>
+                    <DeleteIcon />
+                </IconButton>
             </h3>
             <AddItemForm addItem={addTask}/>
-            <ul>{tasksList}</ul>
+            <ul className='taskBlock'>{tasksList}</ul>
             <div>
-                <button className = {props.filter === 'all' ? 'btn-active' : ''}
-                        onClick = {handlerCreator('all')}>All</button>
-                <button className = {props.filter === 'active' ? 'btn-active' : ''}
-                        onClick = {handlerCreator('active')}>Active</button>
-                <button className = {props.filter === 'completed' ? 'btn-active' : ''}
-                        onClick = {handlerCreator('completed')}>Completed</button>
+                <Button onClick={handlerCreator('all')} variant={props.filter === 'all' ? 'contained':"outlined"}>All</Button>
+                <Button onClick={handlerCreator('active')} variant={props.filter === 'active' ? 'contained':"outlined"}>Active</Button>
+                <Button onClick={handlerCreator('completed')} variant={props.filter === 'completed' ? 'contained':"outlined"} >Completed</Button>
             </div>
         </div>
     )
