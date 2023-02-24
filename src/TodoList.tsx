@@ -11,14 +11,14 @@ type todoListPropsType = {
     title: string;
     tasks: Array <TaskType>;
     removeTask: (todoListId: string, taskId: string)=>void
-    changleFilter: (todoListId: string, filterValue: FilterValuesType)=>void
     addTask: (todolistId: string, title: string) => void
     changeTaskStatus: (todoListId: string, taskId: string, newStatus: boolean)=>void
     filter: FilterValuesType
     id: string
-    removeTodolist: (todoListId: string)=>void
+    changeTodoListFilter: (todoListId: string, filterValue: FilterValuesType)=>void
     changeTaskTitle: (todoListId: string, taskId: string, newTitle: string)=>void
-    changeTLTitle: (todoListId: string, newTitle: string)=>void
+    changeTodoListTitle: (todoListId: string, newTitle: string)=>void
+    removeTodolist: (todoListId: string) => void
 }
 
 
@@ -36,7 +36,7 @@ const TodoList = (props: todoListPropsType) => {
     }
 
     const handlerCreator = (filter: FilterValuesType) => {
-        return () => {props.changleFilter(props.id, filter)}
+        return () => {props.changeTodoListFilter(props.id, filter)}
     }
 
     const addTask = (title: string) => {
@@ -44,7 +44,7 @@ const TodoList = (props: todoListPropsType) => {
     }
 
     const removeTodolistHandler = () => props.removeTodolist(props.id)
-    const onChangeTLTitleHandler = (newTitle: string) => props.changeTLTitle(props.id, newTitle)
+    const onChangeTLTitleHandler = (newTitle: string) => props.changeTodoListTitle(props.id, newTitle)
  
 
     let tasksList = !props.tasks.length 

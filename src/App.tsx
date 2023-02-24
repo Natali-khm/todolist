@@ -16,7 +16,7 @@ export type TaskType = {
   isDone: boolean;
 }
 
-export type TodolistsType = {
+export type TodoListType = {
   id: string
   title: string
   filter: FilterValuesType
@@ -26,12 +26,13 @@ type TasksStateType = {
   [key: string]: TaskType[]
 }
 
+
 function App() {
 
 let todolistID1=v1();
 let todolistID2=v1();
 
-let [todolists, setTodolists] = useState<Array<TodolistsType>>([
+let [todolists, setTodolists] = useState<Array<TodoListType>>([
   {id: todolistID1, title: 'What to learn', filter: 'all'},
   {id: todolistID2, title: 'What to buy', filter: 'all'},
 ])
@@ -53,18 +54,38 @@ let [tasks, setTasks] = useState<TasksStateType>({
     {id: v1(), title: "GraphQL2", isDone: false},
     ]
 })
+  // ---------------------------------------------------------//
 
+  const addTodoList = (title: string) => {
+    const newTodolistID = v1();
+    setTodolists([{id: newTodolistID, title, filter: 'all'}, ...todolists])
+    setTasks( {[newTodolistID]: [], ...tasks})
+  }
 
-  const removeTask = (todoListId: string, taskId: string) => { 
+  const removeTodoList = (todoListId: string) => {
+    setTodolists(todolists.filter(el=>el.id !== todoListId));
+    delete tasks[todoListId]
+  }
+
+  const changeTodoListTitle = (todoListId: string, newTitle: string) => 
+    setTodolists(
+      todolists.map(tl => tl.id === todoListId ? {...tl, title: newTitle} : tl)
+    )
+
+  const changeTodoListFilter = (todoListId: string, filterValue: FilterValuesType) => 
+    setTodolists (todolists.map(el=>el.id === todoListId ? {...el, filter: filterValue} : el) ) 
+  
+
+  // ---------------------------------------------------------//
+
+  const removeTask = (todoListId: string, taskId: string) => 
     setTasks({   ...tasks, [todoListId]: tasks[todoListId].filter(t=> t.id!== taskId)   });
-  };
+  
 
   const addTask = (todolistId: string, title: string) => {
     const newTask: TaskType = {id: v1(), title, isDone: false};
     setTasks({...tasks, [todolistId]: [...tasks[todolistId], newTask]})
   };
-
-  const changleFilter = (todoListId: string, filterValue: FilterValuesType) => { setTodolists (todolists.map(el=>el.id === todoListId ? {...el, filter: filterValue} : el) ) }; 
   
 
   const changeTaskStatus = (todoListId: string, taskId: string, isDone: boolean) => { 
@@ -74,17 +95,6 @@ let [tasks, setTasks] = useState<TasksStateType>({
       )
   };
 
-  const removeTodolist = (todoListId: string) => {
-    setTodolists(todolists.filter(el=>el.id !== todoListId));
-    delete tasks[todoListId]
-  }
-
-  const addTodoList = (title: string) => {
-    const newTodolistID = v1();
-    setTodolists([{id: newTodolistID, title, filter: 'all'}, ...todolists])
-    setTasks( {[newTodolistID]: [], ...tasks})
-  }
-
   const changeTaskTitle = (todoListId: string, taskId: string, newTitle: string) => {
     setTasks(
       {...tasks,
@@ -92,11 +102,14 @@ let [tasks, setTasks] = useState<TasksStateType>({
     })
   }
 
-  const changeTLTitle = (todoListId: string, newTitle: string) => {
-    setTodolists(
-      todolists.map(tl => tl.id === todoListId ? {...tl, title: newTitle} : tl)
-    )
-  }
+  const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
+
+    switch (filter) {
+      case 'active': return tasks.filter(task => !task.isDone);
+      case 'completed': return tasks.filter(task => task.isDone);
+      default: return tasks;
+    }    
+  };
 
   return (
 
@@ -112,22 +125,13 @@ let [tasks, setTasks] = useState<TasksStateType>({
             <Grid container spacing={3}>
               {todolists.map(el=>{
 
-                  const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType) => {
-          
-                    switch (filter) {
-                      case 'active': return tasks.filter(task => !task.isDone);
-                      case 'completed': return tasks.filter(task => task.isDone);
-                      default: return tasks;
-                    }    
-                  };
-
                 const filteredTasksForRender = getFilteredTasksForRender(tasks[el.id], el.filter);
 
                 return (
                     <Grid item>
                       <Paper style={{padding: '20px'}}>
                         <TodoList title = {el.title} 
-                                  changleFilter = {changleFilter} 
+                                  changeTodoListFilter = {changeTodoListFilter} 
                                   tasks = {filteredTasksForRender} 
                                   removeTask = {removeTask}
                                   addTask = {addTask}
@@ -135,9 +139,9 @@ let [tasks, setTasks] = useState<TasksStateType>({
                                   filter = {el.filter}
                                   id={el.id}
                                   key={el.id}
-                                  removeTodolist={removeTodolist}
+                                  removeTodolist={removeTodoList}
                                   changeTaskTitle={changeTaskTitle}
-                                  changeTLTitle={changeTLTitle}
+                                  changeTodoListTitle={changeTodoListTitle}
                                   />                    
                       </Paper>
                     </Grid>
