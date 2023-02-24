@@ -21,7 +21,8 @@ test('correct todolist should be removed', () => {
 
 test('correct todolist should be added', () => {     
     let todolistId1 = v1();     
-    let todolistId2 = v1();     
+    let todolistId2 = v1();  
+    let todolistId3 = v1();  
 
     let newTodolistTitle = "New Todolist";
 
@@ -35,7 +36,7 @@ test('correct todolist should be added', () => {
     //     payload: {title: newTodolistTitle}  
     // }
 
-    const endState = todoListsReducer(startState, AddTodoListAC(newTodolistTitle))
+    const endState = todoListsReducer(startState, AddTodoListAC(todolistId3, newTodolistTitle))
     
     expect(endState.length).toBe(3);     
     expect(endState[2].title).toBe(newTodolistTitle); 
