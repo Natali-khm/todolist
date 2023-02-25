@@ -1,7 +1,7 @@
 import { v1 } from "uuid";
 import { TasksStateType } from "../App";
-import { AddTaskAC, ChangeTaskStatusAC, ChangeTaskTitleAC, RemoveTaskAC, tasksStateReducer } from "./tasksState_reducers";
-import { AddTodoListAC, RemoveTodoListAC } from "./todolists_reducers";
+import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksStateReducer } from "./tasksState_reducer";
+import { addTodoListAC, removeTodoListAC } from "./todolists_reducer";
 
 test('correct task should be added', () => {
     const todolistId1 = v1();
@@ -21,10 +21,12 @@ test('correct task should be added', () => {
 
     const newTaskTitle = 'Redux'
 
-    const endState = tasksStateReducer(startState, AddTaskAC(todolistId1, newTaskTitle))
+    const endState = tasksStateReducer(startState, addTaskAC(todolistId1, newTaskTitle))
 
     expect(endState[todolistId1].length).toBe(3)
-    expect(endState[todolistId1][2].title).toBe(newTaskTitle)
+    expect(endState[todolistId2].length).toBe(2)
+    expect(endState[todolistId2][0].id).toBeDefined()
+    expect(endState[todolistId1][0].title).toBe(newTaskTitle)
 })
 
 
@@ -46,10 +48,12 @@ test('correct task should be removed', () => {
         ]        
     }
 
-    const endState = tasksStateReducer(startState, RemoveTaskAC(todolistId2, removedTaskId))
+    const endState = tasksStateReducer(startState, removeTaskAC(todolistId2, removedTaskId))
 
     expect(endState[todolistId2].length).toBe(1)
+    expect(endState[todolistId1].length).toBe(2)
     expect(endState[todolistId2][0].title).toBe("JS2")
+    expect(endState[todolistId2].every(t => t.id !== removedTaskId)).toBeTruthy()
 
 })
 
@@ -73,10 +77,10 @@ test('correct task should change its name', () => {
         ]        
     }
 
-    const endState = tasksStateReducer(startState, ChangeTaskTitleAC(todolistId2, TaskIdWithChangedTitle, newTaskTitle))
+    const endState = tasksStateReducer(startState, changeTaskTitleAC(todolistId2, TaskIdWithChangedTitle, newTaskTitle))
 
+    expect(endState[todolistId1][1].title).toBe('JS')
     expect(endState[todolistId2][0].title).toBe(newTaskTitle)
-    expect(endState[todolistId2][1].title).toBe('JS2')
 
 })
 
@@ -99,17 +103,16 @@ test('correct task should change its status', () => {
         ]        
     }
 
-    const endState = tasksStateReducer(startState, ChangeTaskStatusAC(todolistId2, TaskIdWithChangedStatus, newTaskStatus))
+    const endState = tasksStateReducer(startState, changeTaskStatusAC(todolistId2, TaskIdWithChangedStatus, newTaskStatus))
 
-    expect(endState[todolistId2][0].isDone).toBe(false)
-    expect(endState[todolistId2][1].isDone).toBe(true)
+    expect(endState[todolistId1][0].isDone).toBeTruthy()
+    expect(endState[todolistId2][0].isDone).toBeFalsy()
 
 })
 
 test('new task state should be created', () => {
     const todolistId1 = v1();
     const todolistId2 = v1();
-    const todolistId3 = v1();
 
     const newTodoListTitle = 'Not forget'
 
@@ -124,14 +127,14 @@ test('new task state should be created', () => {
             {id: v1(), title: "JS2", isDone: true},
         ]        
     }
+    const action = addTodoListAC(newTodoListTitle)
+    const endState = tasksStateReducer(startState, action)
 
-    const endState = tasksStateReducer(startState, AddTodoListAC(todolistId3, newTodoListTitle))
-
-    expect(endState[todolistId3].length).toBe(0)
     expect(Object.keys(endState).length).toBe(3)
-    expect(endState.hasOwnProperty(todolistId3)).toBe(true)
-
+    expect(endState[action.payload.todoListId]).toBeDefined()
+    expect(endState[action.payload.todoListId]).toStrictEqual([])
 })
+
 
 test('correct tasks state should be deleted', () => {
     const todolistId1 = v1();
@@ -149,9 +152,9 @@ test('correct tasks state should be deleted', () => {
         ]        
     }
 
-    const endState = tasksStateReducer(startState, RemoveTodoListAC(todolistId1))
+    const endState = tasksStateReducer(startState, removeTodoListAC(todolistId1))
 
-    expect(endState.hasOwnProperty(todolistId1)).toBe(false)
-    expect(endState.hasOwnProperty(todolistId2)).toBe(true)
+    expect(endState.hasOwnProperty(todolistId1)).toBeFalsy()
+    expect(endState.hasOwnProperty(todolistId2)).toBeTruthy()
 
 })
