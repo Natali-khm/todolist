@@ -1,18 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import App_rewrite from './from_beginning/App_rewrite'
+import AppWithRedux from './AppWithRedux';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
-    {/* <App_rewrite/> */}
-    
+    <Provider store={store}>
+      <AppWithRedux />    
+    </Provider>
   </React.StrictMode>
 );
 

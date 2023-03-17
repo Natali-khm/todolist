@@ -1,7 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
-import AddItemForm from './components/AddItemForm';
-import { FilterValuesType, TaskType } from './App';
-import { EditableSpan } from './components/EditableSpan';
+import AddItemForm from '../components/AddItemForm';
+import { FilterValuesType, TaskType } from './AppWithReducers';
+import { EditableSpan } from '../components/EditableSpan';
 import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -70,7 +70,7 @@ const TodoList = (props: todoListPropsType) => {
         });   
         
         
-    return ( /// style={{display: 'flex', flexDirection: 'column', alignItems: 'stretch'}} 
+    return (
         <div>
             <h3 style={{display: 'flex', justifyContent: 'space-between'}}>
                 <EditableSpan title={props.title} onChange={onChangeTLTitleHandler}/>
