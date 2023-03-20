@@ -1,14 +1,12 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState, useCallback } from "react";
 import { v1 } from "uuid";
 import AddItemForm from "./components/AddItemForm";
 import "./App.css";
-import TodoList from "./other/TodoList";
 import ButtonAppBar from "./components/ButtonAppBar"
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { addTodoListAC, removeTodoListAC, changeTodoListTitleAC, changeTodoListFilterAC, todolistID1, todolistID2 } from "./store/todolists_reducer";
-import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksStateReducer } from "./store/tasksState_reducer";
+import { addTodoListAC } from "./store/todolists_reducer";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootStateType } from "./store/store";
@@ -35,16 +33,16 @@ export type TasksStateType = {
 
 
 function AppWithRedux() {
+  console.log('app');
 
   const dispatch = useDispatch()
 
   const todoLists = useSelector<RootStateType, TodoListType[]>(state => state.todoLists)
 
-  const addTodoList = (title: string) => dispatch(addTodoListAC(title))
+  const addTodoList = useCallback((title: string) => dispatch(addTodoListAC(title)), [])
 
 
   return (
-
      <div className="App">
 
         <ButtonAppBar/>
@@ -66,7 +64,7 @@ function AppWithRedux() {
                                            />                    
                       </Paper>
                     </Grid>
-                    )
+                      )
               })}       
             </Grid>
         </Container>

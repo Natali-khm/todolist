@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react"
+import React, { ChangeEvent, KeyboardEvent, useState } from "react"
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
@@ -7,17 +7,20 @@ type AddItemFormPropsType = {
 }
 
 
-function AddItemForm (props: AddItemFormPropsType) {
+const AddItemForm = React.memo ((props: AddItemFormPropsType) => {
+    console.log('add item form');
 
     const [title, setTitle] = useState<string>('')
-    const [error, setError] = useState<boolean>(false) // заяем здесь | null ???????
+    const [error, setError] = useState<boolean>(false) // зачем здесь | null ???????
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        error && setError(false);
         setTitle(e.currentTarget.value)
     }; 
 
-    const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => { if (e.code === 'Enter') { addTask() }}
+    const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => { 
+        error && setError(false);
+        if (e.code === 'Enter') { addTask() }
+    }
 
     const addTask = () => {
         if (title.trim()){
@@ -34,25 +37,25 @@ function AddItemForm (props: AddItemFormPropsType) {
     return (
         <div>
             <div style = {{display: 'flex', alignItems: 'flex-end'}}> 
-                <TextField  id="standard-basic" 
-                            label={error ? "The title is required" : "Create new item" }
-                            variant="standard"
-                            onChange = {onChangeHandler}
-                            value = {title}
-                            onKeyDown = {onKeyDownHandler}
-                            error={error}
-                            size = 'small'
-                            />
+                <TextField id = "standard-basic" 
+                           label = {error ? "The title is required" : "Create new item" }
+                           size = 'small'
+                           variant = "standard"
+                           value = {title}
+                           onChange = {onChangeHandler}
+                           onKeyDown = {onKeyDownHandler}
+                           error={error}
+                           />
 
                 <Button size = 'small'
-                        variant="outlined" 
-                        style={addItemBtnStyle} 
-                        onClick={addTask}>+</Button>
+                        variant = "outlined" 
+                        style = {addItemBtnStyle} 
+                        onClick = {addTask}>+</Button>
             </div>
             {/* {errorMessage} */}
         </div>
 
     )
-}
+})
 
 export default AddItemForm;
