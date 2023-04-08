@@ -44,7 +44,7 @@ const AddItemForm = React.memo ((props: AddItemFormPropsType) => {
                            value = {title}
                            onChange = {onChangeHandler}
                            onKeyDown = {onKeyDownHandler}
-                           error={error}
+                           error =   {error}
                            />
 
                 <Button size = 'small'

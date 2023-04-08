@@ -1,18 +1,20 @@
-import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
+import { ChangeEvent, KeyboardEvent, useEffect } from 'react'
 import AddItemForm from '../components/AddItemForm';
-import { FilterValuesType, TaskType } from './AppWithReducers';
 import { EditableSpan } from '../components/EditableSpan';
 import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
+import { FilterValuesType } from '../store/todolists_reducer';
+import { TakStatuses, TaskResponseType } from '../api/todolist-api';
+import { useAppDispatch } from '../store/hooks';
 
 type todoListPropsType = {
     title: string;
-    tasks: Array <TaskType>;
+    tasks: Array <TaskResponseType>;
     removeTask: (todoListId: string, taskId: string)=>void
     addTask: (todolistId: string, title: string) => void
-    changeTaskStatus: (todoListId: string, taskId: string, newStatus: boolean)=>void
+    changeTaskStatus: (todoListId: string, taskId: string, status: number)=>void
     filter: FilterValuesType
     id: string
     changeTodoListFilter: (todoListId: string, filterValue: FilterValuesType)=>void
@@ -25,23 +27,15 @@ type todoListPropsType = {
 
 const TodoList = (props: todoListPropsType) => {
 
-    
-    /*  const onClickHandlerAll = () => {props.changleFilter('all')}
-        const onClickHandlerActive = () => {props.changleFilter('active')}
-        const onClickHandlerCompleted = () => {props.changleFilter('completed')}
-    */
-
     const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>, taskId: string) => { 
-        props.changeTaskStatus(props.id, taskId, e.currentTarget.checked)
+        props.changeTaskStatus(props.id, taskId, e.currentTarget.checked ? TakStatuses.Completed : TakStatuses.New)
     }
 
     const handlerCreator = (filter: FilterValuesType) => {
         return () => {props.changeTodoListFilter(props.id, filter)}
     }
 
-    const addTask = (title: string) => {
-        props.addTask(props.id, title)
-    }
+    const addTask = (title: string) => props.addTask(props.id, title)
 
     const removeTodolistHandler = () => props.removeTodolist(props.id)
     const onChangeTLTitleHandler = (newTitle: string) => props.changeTodoListTitle(props.id, newTitle)
@@ -49,15 +43,15 @@ const TodoList = (props: todoListPropsType) => {
 
     let tasksList = !props.tasks.length 
     ? <span>Your to-do list is empty</span>  
-    : props.tasks.map((task: TaskType) => {     
+    : props.tasks.map((task: TaskResponseType) => {     
             
         const removeTask = () => props.removeTask(props.id, task.id)
         const onChangeTaskTitleHandler = (newTitle: string) => props.changeTaskTitle(props.id, task.id, newTitle)
-        const finalTaskStyle = 'task-default' + (task.isDone ? ' ' + 'task-done' : ' ' + 'task');
+        const finalTaskStyle = 'task-default' + (task.status ? ' ' + 'task-done' : ' ' + 'task');
 
         return (
             <li key={task.id} className={finalTaskStyle}>
-                <Checkbox checked={task.isDone}
+                <Checkbox checked={!!task.status}
                           onChange = {(e)=>changeTaskStatus(e, task.id)}
                           color="success"
                           />
