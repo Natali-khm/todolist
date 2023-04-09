@@ -7,7 +7,7 @@ import { TakStatuses, TaskResponseType } from "./api/todolist-api";
 
 type TaskPropsType = {
     task: TaskResponseType
-    changeTaskStatus: (e: ChangeEvent<HTMLInputElement>, taskId: string) => void
+    changeTaskStatus: (taskId: string, e: ChangeEvent<HTMLInputElement>) => void
     changeTaskTitleHandler: (taskId: string, newTitle: string) => void
     removeTask: (taskId: string) => void
 }
@@ -17,7 +17,7 @@ export const Task: React.FC<TaskPropsType> = memo(({task, changeTaskStatus, chan
     
     const finalTaskStyle = 'task-default' + (task.status === TakStatuses.Completed ? ' ' + 'task-done' : ' ' + 'task')
 
-    const onChangeTaskStatus = (e:ChangeEvent<HTMLInputElement>) => changeTaskStatus(e, task.id)
+    const onChangeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => changeTaskStatus(task.id, e)
 
     const onChangeTaskTitleHandler = (newTitle: string) => changeTaskTitleHandler(task.id, newTitle)
     

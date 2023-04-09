@@ -98,8 +98,8 @@ export type TaskResponseType = {
 export type UpdateTaskModelType = {
     title: string
     description: string
-    status: number
-    priority: number
+    status: TakStatuses
+    priority: TaskPriorities
     startDate: string
     deadline: string
 }

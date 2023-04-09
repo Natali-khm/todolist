@@ -1,12 +1,12 @@
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect } from 'react'
+import { ChangeEvent, useCallback, useEffect } from 'react'
 import AddItemForm from './components/AddItemForm';
 import { EditableSpan } from './components/EditableSpan';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useSelector } from 'react-redux';
 import { RootStateType } from './store/store';
-import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, fetchTasks, removeTaskAC } from './store/tasksState_reducer';
-import { changeTodoListFilterAC, changeTodoListTitleAC, FilterValuesType, removeTodoListAC } from './store/todolists_reducer';
+import { addTaskTC, fetchTasks, removeTaskTC, updateTaskTC } from './store/tasksState_reducer';
+import { changeTodoListFilterAC, changeTodoListTitleTC, FilterValuesType, removeTodoListTC } from './store/todolists_reducer';
 import { ButtonContainer } from './ButtonContainer';
 import { Task } from './Task';
 import { TakStatuses, TaskResponseType } from './api/todolist-api';
@@ -47,13 +47,15 @@ const TodoListWithRedux = (props: todoListPropsType) => {
 
     // ------------- tasks for render-------------//
         
-    const removeTask = useCallback((taskId: string) => dispatch(removeTaskAC(props.tlId, taskId)), [props.tlId])
+    const removeTask = useCallback((taskId: string) => {
+        dispatch(removeTaskTC(props.tlId, taskId))
+    }, [props.tlId])
 
-    const changeTaskTitleHandler = useCallback((newTitle: string, taskId: string) => {
-        dispatch(changeTaskTitleAC(props.tlId, taskId, newTitle))}, [props.tlId])
+    const changeTaskTitleHandler = useCallback((taskId: string, newTitle: string) => {
+        dispatch(updateTaskTC(props.tlId, taskId, { title: newTitle }))}, [props.tlId])
     
-    const changeTaskStatus = useCallback((e: ChangeEvent<HTMLInputElement>, taskId: string) => { 
-        dispatch(changeTaskStatusAC(props.tlId, taskId, e.currentTarget.checked ? TakStatuses.Completed : TakStatuses.New))}, [props.tlId])
+    const changeTaskStatus = useCallback((taskId: string, e: ChangeEvent<HTMLInputElement>) => { 
+        dispatch(updateTaskTC(props.tlId, taskId, {status: e.currentTarget.checked ? TakStatuses.Completed : TakStatuses.New}))}, [props.tlId])
 
 
     let tasksList = !tasks.length 
@@ -72,11 +74,11 @@ const TodoListWithRedux = (props: todoListPropsType) => {
 
     // ------------- handlers -------------//
 
-    const removeTodolistHandler = () => dispatch(removeTodoListAC(props.tlId))
+    const removeTodolistHandler = () => dispatch(removeTodoListTC(props.tlId))
 
-    const changeTLTitleHandler = useCallback((newTitle: string) => dispatch(changeTodoListTitleAC(props.tlId, newTitle)), [props.tlId])
+    const changeTLTitleHandler = useCallback((newTitle: string) => dispatch(changeTodoListTitleTC(props.tlId, newTitle)), [props.tlId])
 
-    const addTask = useCallback((title: string) => dispatch(addTaskAC(props.tlId, title)), [])
+    const addTask = useCallback((title: string) => dispatch(addTaskTC(props.tlId, title)), [])
 
     // ------------- filter buttons-------------//
 

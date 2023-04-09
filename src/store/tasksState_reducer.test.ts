@@ -1,6 +1,6 @@
-import { TakStatuses, TaskPriorities, TodoListResponseType } from './../api/todolist-api';
+import { TakStatuses, TaskPriorities } from './../api/todolist-api';
 import { v1 } from "uuid";
-import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, setTasksAC, tasksStateReducer, TasksStateType } from "./tasksState_reducer";
+import { addTaskAC, removeTaskAC, setTasksAC, tasksStateReducer, TasksStateType, updateTaskAC } from "./tasksState_reducer";
 import { addTodoListAC, removeTodoListAC, setTodoListsAC } from "./todolists_reducer";
 
 let todolistId1: string
@@ -27,13 +27,15 @@ beforeEach(()=>{
 })
 
 test('correct task should be added', () => {
-    const newTaskTitle = 'Redux'
-    const endState = tasksStateReducer(startState, addTaskAC(todolistId1, newTaskTitle))
+    const taskId = v1()
+    const newTask = {id: taskId, title: "Storybook", status: TakStatuses.New, priority: TaskPriorities.New, startDate: '', deadline: '', addedDate: '', order: 0, todoListId: todolistId1, description: ''}
+
+    const endState = tasksStateReducer(startState, addTaskAC(newTask))
 
     expect(endState[todolistId1].length).toBe(3)
     expect(endState[todolistId2].length).toBe(2)
-    expect(endState[todolistId2][0].id).toBeDefined()
-    expect(endState[todolistId1][0].title).toBe(newTaskTitle)
+    expect(endState[todolistId1][0].id).toBe(taskId)
+    expect(endState[todolistId1][0].title).toBe(newTask.title)
 })
 
 
@@ -49,28 +51,30 @@ test('correct task should be removed', () => {
 
 test('correct task should change its name', () => {
     const newTaskTitle = 'React'
-    const endState = tasksStateReducer(startState, changeTaskTitleAC(todolistId2, changedTaskId, newTaskTitle))
+    const endState = tasksStateReducer(startState, updateTaskAC(todolistId2, changedTaskId, { title: newTaskTitle }))
 
     expect(endState[todolistId1][1].title).toBe('JS')
     expect(endState[todolistId2][0].title).toBe(newTaskTitle)
 })
 
+
 test('correct task should change its status', () => {
     const newTaskStatus = TakStatuses.New
-    const endState = tasksStateReducer(startState, changeTaskStatusAC(todolistId2, changedTaskId, newTaskStatus))
+    const endState = tasksStateReducer(startState, updateTaskAC(todolistId2, changedTaskId, { status: newTaskStatus }))
 
     expect(endState[todolistId1][0].status).toBe(TakStatuses.Completed)
     expect(endState[todolistId2][0].status).toBe(TakStatuses.New)
 })
 
-test('new task state should be created', () => {
-    const newTodoListTitle = 'Not forget'
-    const action = addTodoListAC(newTodoListTitle)
+
+test('new task state should be created when we add new todo-list', () => {
+    const newTodoList = {id: v1(), title: 'To buy to eat', filter: 'all', addedDate: '', order: 0}
+    const action = addTodoListAC(newTodoList)
     const endState = tasksStateReducer(startState, action)
 
     expect(Object.keys(endState).length).toBe(3)
-    expect(endState[action.payload.todoListId]).toBeDefined()
-    expect(endState[action.payload.todoListId]).toStrictEqual([])
+    expect(endState[action.payload.todoList.id]).toBeDefined()
+    expect(endState[action.payload.todoList.id]).toStrictEqual([])
 })
 
 

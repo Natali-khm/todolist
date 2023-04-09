@@ -16,8 +16,7 @@ export type RemoveTodoListAT = {
 export type AddTodoListAT = {
     type: 'ADD-TODO-LIST',
     payload: {
-        todoListId: string
-        title: string
+        todoList: TodoListResponseType
     }
 }
 
@@ -53,6 +52,7 @@ export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodoListsDomainType = TodoListResponseType & {
     filter: FilterValuesType
 }
+
 const initialState: TodoListsDomainType[] = []
 
 
@@ -61,14 +61,8 @@ export const todoListsReducer = (todoLists: TodoListsDomainType[] = initialState
     switch (action.type) {
 
         case 'ADD-TODO-LIST':
-            const newTodolistID = action.payload.todoListId;
-            return [ {id: newTodolistID, 
-                      title: action.payload.title, 
-                      filter: 'all',
-                      addedDate: '',
-                      order: 0
-                     }
-                     , ...todoLists]
+            const newTodoList: TodoListsDomainType = {...action.payload.todoList, filter: 'all'}
+            return [ newTodoList, ...todoLists]
 
         case 'REMOVE-TODO-LIST':
             return todoLists.filter(tl => tl.id !== action.payload.todoListId)
@@ -88,11 +82,10 @@ export const todoListsReducer = (todoLists: TodoListsDomainType[] = initialState
 }
 
 
-export const addTodoListAC = (title: string): AddTodoListAT => ({
+export const addTodoListAC = (todoList: TodoListResponseType): AddTodoListAT => ({
     type: 'ADD-TODO-LIST',
     payload: {
-        todoListId: v1(),
-        title
+        todoList
     }
 })
 
@@ -127,11 +120,28 @@ export const setTodoListsAC = (todoLists: TodoListResponseType[]): SetoTodoLists
 })
 
 
-export const fetchTodoLists = (): AppThunkType => {
-  return (dispatch) => {        
+// THUNKS
 
+export const fetchTodoLists = (): AppThunkType => (dispatch) => {        
     todoListAPI
       .getTodoList()
       .then((response) => dispatch(setTodoListsAC(response.data)));
-  };
-};
+}
+
+export const addTodoListTC = (title: string): AppThunkType => (dispatch) => {        
+    todoListAPI
+      .createTodoList(title)
+      .then((response) => dispatch(addTodoListAC(response.data.data.item)));
+}
+
+export const removeTodoListTC = (todoListId: string): AppThunkType => (dispatch) => {        
+    todoListAPI
+      .deleteTodoList(todoListId)
+      .then((response) => dispatch(removeTodoListAC(todoListId)));
+}
+
+export const changeTodoListTitleTC = (todoListId: string, newTitle: string): AppThunkType => (dispatch) => {        
+    todoListAPI
+      .updateTodoList(todoListId, newTitle)
+      .then((response) => dispatch(changeTodoListTitleAC(todoListId, newTitle)));
+}
