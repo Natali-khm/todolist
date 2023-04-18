@@ -45,8 +45,9 @@ export const todoListAPI = {
 };
 
 
+// types
 
-type ResponseType<T = {}> = {
+export type ResponseType<T = {}> = {
   resultCode: number;
   messages: Array<string>;
   fieldsErrors: Array<string>;
@@ -96,10 +97,10 @@ export type TaskResponseType = {
 };
 
 export type UpdateTaskModelType = {
-    title: string
-    description: string
-    status: TakStatuses
-    priority: TaskPriorities
-    startDate: string
-    deadline: string
+  title: string
+  description: string
+  status: TakStatuses
+  priority: TaskPriorities
+  startDate: string
+  deadline: string
 }

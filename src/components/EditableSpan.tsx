@@ -3,9 +3,10 @@ import React, { ChangeEvent, useState } from "react"
 type EditableSpanType = {
     title: string
     onChange: (newTitle: string) => void
+    disabled?: boolean
 }
 
-export const EditableSpan = React.memo((props: EditableSpanType) => { 
+export const EditableSpan = React.memo(({disabled = false, ...props}: EditableSpanType) => { 
     console.log('editable span');
     
 

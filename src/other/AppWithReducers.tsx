@@ -25,8 +25,8 @@ const todolistID2=v1();
 
 
 const [todolists, dispatchTodoLists] = useReducer<Reducer<TodoListsDomainType[], TodoListActionType>>(todoListsReducer, [
-  {id: todolistID1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
-  {id: todolistID2, title: 'What to buy', filter: 'all', addedDate: '', order: 0},
+  {id: todolistID1, title: 'What to learn', filter: 'all', addedDate: '', order: 0, todoListEntityStatus: 'idle'},
+  {id: todolistID2, title: 'What to buy', filter: 'all', addedDate: '', order: 0, todoListEntityStatus: 'idle'},
 ])
   
 const [tasks, dispatchTasks] = useReducer(tasksStateReducer, {

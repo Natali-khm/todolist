@@ -3,19 +3,19 @@ import AddItemForm from './components/AddItemForm';
 import { EditableSpan } from './components/EditableSpan';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { useSelector } from 'react-redux';
-import { RootStateType } from './store/store';
 import { addTaskTC, fetchTasks, removeTaskTC, updateTaskTC } from './store/tasksState_reducer';
 import { changeTodoListFilterAC, changeTodoListTitleTC, FilterValuesType, removeTodoListTC } from './store/todolists_reducer';
 import { ButtonContainer } from './ButtonContainer';
 import { Task } from './Task';
 import { TakStatuses, TaskResponseType } from './api/todolist-api';
-import { useAppDispatch } from './store/hooks';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { RequestStatusType } from './store/app_reducer';
 
 type todoListPropsType = {
     title: string;
     filter: FilterValuesType
     tlId: string
+    tlEntityStatus: RequestStatusType
 }
 
 
@@ -29,7 +29,7 @@ const TodoListWithRedux = (props: todoListPropsType) => {
         dispatch(fetchTasks(props.tlId))
     }, [])
     
-    const tasks = useSelector<RootStateType, TaskResponseType[]>(state => state.tasks[props.tlId])
+    const tasks = useAppSelector<TaskResponseType[]>(state => state.tasks[props.tlId])
 
     // ------------- filtered tasks -------------//
 
@@ -67,6 +67,7 @@ const TodoListWithRedux = (props: todoListPropsType) => {
                      changeTaskStatus = {changeTaskStatus}
                      changeTaskTitleHandler = {changeTaskTitleHandler}
                      removeTask = {removeTask}
+                     tlEntityStatus = {props.tlEntityStatus}
                      //   tlId = {props.tlId}  // for TaskWithRedux
                />
     });   
@@ -93,12 +94,12 @@ const TodoListWithRedux = (props: todoListPropsType) => {
     return (
         <div>
             <h3 style={{display: 'flex', justifyContent: 'space-between'}}>
-                <EditableSpan title={props.title} onChange={changeTLTitleHandler}/>
-                <IconButton aria-label="delete" onClick={removeTodolistHandler} style={{color: '#f07d7d'}}>
+                <EditableSpan title={props.title} onChange={changeTLTitleHandler} disabled={props.tlEntityStatus === 'loading'}/>
+                <IconButton aria-label="delete" onClick={removeTodolistHandler} color="primary" disabled={props.tlEntityStatus === 'loading'}>
                     <DeleteIcon />
                 </IconButton>
             </h3>
-            <AddItemForm addItem={addTask}/>
+            <AddItemForm addItem={addTask} disabled={props.tlEntityStatus === 'loading'}/>
             <ul className='taskBlock'>{tasksList}</ul>
             <div>
                 <ButtonContainer title = {'All'}

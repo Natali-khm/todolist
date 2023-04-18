@@ -1,10 +1,7 @@
 .App {
-  /* padding: 30px;
-  display: flex; */
 }
 
 .App > div {
-  margin-right: 50px;
 }
 
 .task-done {
@@ -32,6 +29,6 @@
 }
 
 .taskBlock{
-  /* margin: 0; */
   padding: 20px;
 }
+

@@ -1,5 +1,6 @@
 import { v1 } from "uuid";
-import { addTodoListAC, changeTodoListFilterAC, changeTodoListTitleAC, FilterValuesType, removeTodoListAC, setTodoListsAC, TodoListsDomainType, todoListsReducer } from "./todolists_reducer";
+import { RequestStatusType } from "./app_reducer";
+import { addTodoListAC, changeTodoListFilterAC, changeTodoListTitleAC, FilterValuesType, removeTodoListAC, setTodoListEntityStatusAC, setTodoListsAC, TodoListsDomainType, todoListsReducer } from "./todolists_reducer";
 
 let todolistId1: string;
 let todolistId2: string;
@@ -10,8 +11,8 @@ beforeEach(() => {
     todolistId2 = v1();
 
     startState = [        
-        {id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
-        {id: todolistId2, title: 'What to buy', filter: 'all', addedDate: '', order: 0},
+        {id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0, todoListEntityStatus: 'idle'},
+        {id: todolistId2, title: 'What to buy', filter: 'all', addedDate: '', order: 0, todoListEntityStatus: 'idle'},
     ]
 
 })
@@ -25,7 +26,7 @@ test('correct todo-list should be removed', () => {
 });
 
 
-test('correct todo-list should be added', () => {     
+test('correct to-do list should be added', () => {     
 
     const newTodoList = {id: v1(), title: 'To buy to eat', filter: 'all', addedDate: '', order: 0}
 
@@ -36,7 +37,7 @@ test('correct todo-list should be added', () => {
 });
 
 
-test('correct todolist should change its name', () => {     
+test('correct to-do list should change its name', () => {     
 
     let newTodolistTitle = "New Todolist";    
 
@@ -47,7 +48,7 @@ test('correct todolist should change its name', () => {
 })
 
 
-test('correct filter of todolist should be changed', () => {         
+test('correct filter of to-do list should be changed', () => {         
 
     let newFilter: FilterValuesType = "completed";  
 
@@ -57,7 +58,19 @@ test('correct filter of todolist should be changed', () => {
     expect(endState[1].filter).toBe(newFilter);     
 });
 
-test('todo-lists should be set to the state', () => {         
+
+test('correct entity status of to-do list should be set', () => {         
+
+    let newStatus: RequestStatusType = "loading";  
+
+    const endState = todoListsReducer(startState, setTodoListEntityStatusAC(todolistId2, newStatus))  
+
+    expect(endState[0].todoListEntityStatus).toBe("idle");         
+    expect(endState[1].todoListEntityStatus).toBe(newStatus);     
+});
+
+
+test('to-do lists should be set to the state', () => {         
 
     const endState = todoListsReducer([], setTodoListsAC(startState))  
 
