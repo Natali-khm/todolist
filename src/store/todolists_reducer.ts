@@ -90,9 +90,12 @@ export const fetchTodoLists = (): AppThunkType => (dispatch) => {
     todoListAPI
       .getTodoList()
       .then((response) => {
-          dispatch(setTodoListsAC(response.data))
-          dispatch(setAppStatus('succeeded'))
+        dispatch(setTodoListsAC(response.data));
+        dispatch(setAppStatus("succeeded"));
       })
+      .catch((error) => {
+        handleServerNetworkError(error, dispatch);
+      });
 }
 
 export const addTodoListTC = (title: string): AppThunkType => (dispatch) => {
